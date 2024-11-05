@@ -1,6 +1,6 @@
 package se.oscar.adventure.model;
 
-public class Entity {
+public abstract class Entity {
     private final String role;
     private int health;
     int damage;
@@ -33,5 +33,9 @@ public class Entity {
 
     public boolean isConscious() {
         return this.health > 0;
+    }
+
+    public void setDamage(int damage) {
+        this.damage = damage;
     }
 }

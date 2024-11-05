@@ -3,30 +3,28 @@ package se.oscar.adventure;
 import se.oscar.adventure.model.Burglar;
 import se.oscar.adventure.model.Entity;
 import se.oscar.adventure.model.Resident;
-import se.oscar.adventure.rooms.Room;
-import se.oscar.adventure.rooms.RoomFactory;
+import se.oscar.adventure.rooms.*;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Game {
-    private final String NORTH = "north";
-    private final String SOUTH = "south";
-    private final String EAST = "east";
-    private final String WEST = "west";
-    private final String TOWN_CENTER = "town_center";
-    private final String START = "start";
-    private String currentLocation = START;
-    private Entity player;
-    private Entity intruder;
+
+    private Resident player;
+    private Burglar intruder;
     private boolean run = true;
     private final Scanner scanner = new Scanner(System.in);
+    private final GameState gameState = GameState.getInstance();
+    private final Kitchen kitchen = new Kitchen();
+    private final Bedroom bedroom = new Bedroom();
+    private final Hallway hallway = new Hallway();
+    private final LivingRoom livingRoom = new LivingRoom();
+    private final Office office = new Office();
 
-
-    Room kitchen = RoomFactory.createRoom("KITCHEN");
 
     public void start() {
-        townCentre();
-        while (run || player.isConscious()) {
+        while (run && player.isConscious() && !office.policeCalled()) {
+            nextMove();
             run = processInput();
         }
     }
@@ -40,7 +38,8 @@ public class Game {
                     
                     Instructions:
                     Control the player by typing the action you would like to take
-                    Commands include:
+                    Take out the burglar and contact the authorities as quick as you can!
+                    Commands include: 'kitchen 'bedroom' 'hallway' 'living room' 'office'
                     You can only walk to adjacent locations
                     If your health reaches 0 you lose
                     """);
@@ -50,7 +49,13 @@ public class Game {
                 case "y" -> {
                     player = new Resident("Resident", 12, 3);
                     intruder = new Burglar("Burglar", 12, 4);
+                    System.out.println("""
+                            
+                            You're suddenly awoken by a loud bang coming from the hallway
+                            In a haze, you stand up from the couch, looking around the living room, ready to take action.
+                            """);
                     System.out.println("Starting the game. . .");
+                    Thread.sleep(1000);
                     start();
                 }
                 case "n" -> System.out.println("Perhaps another time.");
@@ -67,11 +72,11 @@ public class Game {
     private boolean processInput() {
         String choice = getUserInput().toLowerCase();
         switch (choice) {
-            case "go north" -> north();
-            case "go south" -> south();
-            case "go east" -> east();
-            case "go west" -> west();
-            case "go to town" -> townCentre();
+            case "kitchen" -> kitchen();
+            case "bedroom" -> bedroom();
+            case "hallway" -> hallway();
+            case "living room" -> livingRoom();
+            case "office" -> office();
             case "quit" -> {
                 return false;
             }
@@ -80,13 +85,23 @@ public class Game {
         return true;
     }
 
+    private boolean searchInput() {
+        System.out.println("Do you want to look around the " + gameState.getCurrentRoom() + "? (search/no) ");
+        String choice = getUserInput().toLowerCase();
+        return choice.equals("search");
+    }
+
     void executeAttack(Entity attacker, Entity defender) {
-        attacker.punch(defender);
-        System.out.println(attacker.getRole() + " attacks " + defender.getRole() + " for " + attacker.getDamage());
-        if (defender.isConscious()) {
-            System.out.println(defender.getRole() + " has " + defender.getHealth() + " health left");
-        } else {
-            System.out.println(defender.getRole() + " has been knocked out!");
+        try {
+            attacker.punch(defender);
+            System.out.println(attacker.getRole() + " attacks " + defender.getRole() + " for " + attacker.getDamage());
+            if (defender.isConscious()) {
+                System.out.println(defender.getRole() + " has " + defender.getHealth() + " health left");
+            } else {
+                System.out.println(defender.getRole() + " has been knocked out!");
+            }
+            Thread.sleep(1500);
+        } catch (Exception _) {
         }
     }
 
@@ -97,65 +112,59 @@ public class Game {
         }
     }
 
-    private void townCentre() {
-        if (!currentLocation.equals(TOWN_CENTER)) {
-            System.out.println("You enter a bustling town crowded with merchants and adventurers alike.");
-            // Town implement
-            currentLocation = TOWN_CENTER;
+    private void livingRoom() {
+        if (!Objects.equals(gameState.getCurrentRoom(), "LIVING_ROOM")) {
+            livingRoom.enter();
         } else {
             System.out.println("You cant go there");
         }
-        nextMove();
     }
 
-    private void north() {
-        if (currentLocation.equals(TOWN_CENTER)) {
-            System.out.println("Going north");
-            // Encounter implement
-            currentLocation = NORTH;
-
-            fightOneRound();
-
+    private void kitchen() {
+        if (Objects.equals(gameState.getCurrentRoom(), "LIVING_ROOM")) {
+            kitchen.enter();
+            if (searchInput()) {
+                kitchen.search(scanner, player);
+            }
         } else {
             System.out.println("You cant go there");
         }
-        nextMove();
     }
 
-    private void south() {
-        if (currentLocation.equals(TOWN_CENTER)) {
-            System.out.println("Going south");
-            // Encounter implement
-            currentLocation = SOUTH;
+    private void bedroom() {
+        if (Objects.equals(gameState.getCurrentRoom(), "LIVING_ROOM")) {
+            bedroom.enter();
+            if (searchInput()) {
+                bedroom.description();
+            }
         } else {
             System.out.println("You cant go there");
         }
-        nextMove();
     }
 
-    private void east() {
-        if (currentLocation.equals(TOWN_CENTER)) {
-            System.out.println("Going east");
-            // Encounter implement
-            currentLocation = EAST;
+    private void hallway() {
+        if (Objects.equals(gameState.getCurrentRoom(), "LIVING_ROOM")) {
+            hallway.enter();
+            while (player.isConscious() && intruder.isConscious()) {
+                fightOneRound();
+            }
         } else {
             System.out.println("You cant go there");
         }
-        nextMove();
     }
 
-    private void west() {
-        if (currentLocation.equals(TOWN_CENTER)) {
-            System.out.println("Going west");
-            // Encounter implement
-            currentLocation = WEST;
+    private void office() {
+        if (Objects.equals(gameState.getCurrentRoom(), "LIVING_ROOM")) {
+            office.enter();
+            if (searchInput()) {
+                office.search(scanner, intruder);
+            }
         } else {
             System.out.println("You cant go there");
         }
-        nextMove();
     }
 
     private void nextMove() {
-        System.out.println("What do you want to do next?");
+        System.out.println("Which room do you want to go to?");
     }
 }
