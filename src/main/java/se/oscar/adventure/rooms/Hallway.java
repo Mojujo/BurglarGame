@@ -7,7 +7,7 @@ public class Hallway implements Room {
 
     @Override
     public void description() {
-        System.out.println("hallway description");
+        System.out.println("The hallway is dark, but you can make out a figure standing in the hallway, it must be a burglar");
     }
 
     @Override

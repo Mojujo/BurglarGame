@@ -93,6 +93,7 @@ public class Game {
 
     void executeAttack(Entity attacker, Entity defender) {
         try {
+            Thread.sleep(1500);
             attacker.punch(defender);
             System.out.println(attacker.getRole() + " attacks " + defender.getRole() + " for " + attacker.getDamage());
             if (defender.isConscious()) {
@@ -100,7 +101,6 @@ public class Game {
             } else {
                 System.out.println(defender.getRole() + " has been knocked out!");
             }
-            Thread.sleep(1500);
         } catch (Exception _) {
         }
     }
@@ -145,8 +145,12 @@ public class Game {
     private void hallway() {
         if (Objects.equals(gameState.getCurrentRoom(), "LIVING_ROOM")) {
             hallway.enter();
-            while (player.isConscious() && intruder.isConscious()) {
-                fightOneRound();
+            if (intruder.isConscious()) {
+                hallway.description();
+                System.out.println("No time to waste, you lunge at the intruder! ");
+                while (player.isConscious() && intruder.isConscious()) {
+                    fightOneRound();
+                }
             }
         } else {
             System.out.println("You cant go there");

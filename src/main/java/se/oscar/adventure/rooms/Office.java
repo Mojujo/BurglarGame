@@ -13,8 +13,7 @@ public class Office implements Room {
     public void description() {
         System.out.println("""
                 Theres stacks of paper, files and folders scattered on the desk
-                Your mobile phone must be here somewhere, but theres no time to look around thoroughly
-                """);
+                Your mobile phone must be here somewhere, but theres no time to look around thoroughly""");
     }
 
     @Override
@@ -29,12 +28,13 @@ public class Office implements Room {
         if (!entity.isConscious()) {
             System.out.println("""
                     With the burglar down you have enough time to find your phone in one of the drawers
-                    What number do you want to dial?
-                    """);
+                    What number do you want to dial?""");
             String choice = scanner.nextLine();
             if (choice.equals("112") || choice.equals("911")) {
                 System.out.println("You call the authorities. They're on the way.");
                 callMade = true;
+            } else {
+                System.out.println("Wrong number. Man im stupid.");
             }
         }
     }
