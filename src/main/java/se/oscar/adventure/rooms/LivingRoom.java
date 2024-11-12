@@ -7,12 +7,13 @@ public class LivingRoom implements Room {
 
     @Override
     public void description() {
-        System.out.println("The living room description");
+        System.out.println("Its as messy as you left it");
     }
 
     @Override
     public void enter() {
         System.out.println("You enter the living room");
+        description();
         gameState.setCurrentRoom("LIVING_ROOM");
     }
 }

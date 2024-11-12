@@ -39,10 +39,11 @@ public class Game {
                     Instructions:
                     Control the player by typing the action you would like to take
                     Take out the burglar and contact the authorities as quick as you can!
-                    Commands include: 'kitchen 'bedroom' 'hallway' 'living room' 'office'
+                    Commands include: 'kitchen 'bedroom' 'hallway' 'living room' 'office' 'map' 'quit'
                     You can only walk to adjacent locations
                     If your health reaches 0 you lose
                     """);
+            map();
             Thread.sleep(1000);
             System.out.println("Do you want to start the game? (y/n)");
             switch (getUserInput()) {
@@ -77,6 +78,7 @@ public class Game {
             case "hallway" -> hallway();
             case "living room" -> livingRoom();
             case "office" -> office();
+            case "map" -> map();
             case "quit" -> {
                 return false;
             }
@@ -151,6 +153,8 @@ public class Game {
                 while (player.isConscious() && intruder.isConscious()) {
                     fightOneRound();
                 }
+            } else {
+                System.out.println("The burglar is laid out on the floor");
             }
         } else {
             System.out.println("You cant go there");
@@ -169,6 +173,20 @@ public class Game {
     }
 
     private void nextMove() {
+        System.out.println("----------------------------------------");
         System.out.println("Which room do you want to go to?");
+    }
+
+    private void map() {
+        System.out.println("""
+                Map:
+                ___________________________________
+                |             Kitchen             |
+                |                |                |
+                |Bedroom -- Living Room -- Hallway|
+                |                |                |
+                |             Office              |
+                |_________________________________|""");
+        System.out.println("You are in the: " + gameState.getCurrentRoom().toLowerCase());
     }
 }
