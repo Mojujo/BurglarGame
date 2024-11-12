@@ -1,5 +1,7 @@
 package se.oscar.adventure;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import se.oscar.adventure.model.Burglar;
 import se.oscar.adventure.model.Resident;
@@ -7,8 +9,24 @@ import se.oscar.adventure.model.Resident;
 import static org.junit.Assert.*;
 
 public class EntityTest {
-    Resident player = new Resident("Resident", 4, 3);
-    Burglar intruder = new Burglar("Burglar", 4, 4);
+    Resident player;
+    Burglar intruder;
+
+    @Before
+    public void setUp() {
+        player = new Resident("Resident", 4, 3);
+        intruder = new Burglar("Burglar", 4, 4);
+    }
+
+    @After
+    public void tearDown() {
+        player = null;
+        intruder = null;
+    }
+
+    ///////////
+    // Tests //
+    ///////////
 
     @Test
     public void testPunch() {
@@ -18,8 +36,8 @@ public class EntityTest {
 
     @Test
     public void testTakeDamage() {
-        player.takeDamage(3);
-        assertEquals(1, player.getHealth());
+        intruder.takeDamage(3);
+        assertEquals(1, intruder.getHealth());
     }
 
     @Test
