@@ -36,11 +36,10 @@ public class Office implements Room {
             String choice = scanner.nextLine();
             if (choice.equals("112") || choice.equals("911")) {
                 System.out.println("You call the authorities. They're on the way.");
-                callMade = true;
             } else {
                 System.out.println("Wrong number. Are you stupid?");
-                callMade = true;
             }
+            callMade = true;
         }
     }
 
